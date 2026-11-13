@@ -1,0 +1,55 @@
+
+def create_state(data):
+    return [[data[row + 4 * col] for col in range(4)] for row in range(4)]
+
+
+def print_state(state, title):
+    print("\n" + title)
+    for row in state:
+        print(" ".join(f"{byte:02x}" for byte in row))
+
+
+def add_round_key(state, key):
+    return [
+        [state[row][col] ^ key[row][col] for col in range(4)]
+        for row in range(4)
+    ]
+
+
+def shift_rows(state):
+    result = []
+
+    for row in range(4):
+        result.append(state[row][row:] + state[row][:row])
+
+    return result
+
+
+initial_data = [
+    0x32, 0x43, 0xf6, 0xa8,
+    0x88, 0x5a, 0x30, 0x8d,
+    0x31, 0x31, 0x98, 0xa2,
+    0xe0, 0x37, 0x07, 0x34
+]
+
+state = create_state(initial_data)
+
+print_state(state, "а) Начално състояние:")
+
+state = shift_rows(state)
+print_state(state, "б) След ShiftRows:")
+
+key_data = [
+    0x2b, 0x7e, 0x15, 0x16,
+    0x28, 0xae, 0xd2, 0xa6,
+    0xab, 0xf7, 0x15, 0x88,
+    0x09, 0xcf, 0x4f, 0x3c
+]
+
+key = create_state(key_data)
+
+state = add_round_key(state, key)
+print_state(state, "в) След AddRoundKey:")
+
+state = shift_rows(state)
+print_state(state, "г) След втория ShiftRows:")
